@@ -1,7 +1,7 @@
 // Configuración de Supabase para App Casas de Vida
 const SUPABASE_CONFIG = {
     url: 'https://hafdxfpcoxqnyyrphici.supabase.co',
-    anonKey: 'sb_publishable_ymb54-xSoLPv5T5uv_aUfg_uLM3v..'
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhhZmR4ZnBjb3hxbnl5cnBoaWNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzY2OTMsImV4cCI6MjA5MjcxMjY5M30.k54B64DFW-rTAMac9moJUGz91BLZVgjl2uE2AwWKxnw'
 };
 
 // Esperar a que la librería de Supabase esté disponible
