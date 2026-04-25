@@ -189,23 +189,43 @@ class SimpleLogin {
 
 // Funciones globales simples
 function showMainApp() {
-    const login = new SimpleLogin();
-    login.showMainApp({
-        id: 2,
-        email: 'admin@casasvida.com',
-        nombre: 'Admina',
-        rol: 'admin',
-        telefono: null,
-        authUser: { email: 'admin@casasvida.com' }
-    });
+    if (typeof SimpleLogin !== 'undefined') {
+        const login = new SimpleLogin();
+        login.showMainApp({
+            id: 2,
+            email: 'admin@casasvida.com',
+            nombre: 'Admina',
+            rol: 'admin',
+            telefono: null,
+            authUser: { email: 'admin@casasvida.com' }
+        });
+    } else {
+        console.error('SimpleLogin class no encontrada');
+    }
 }
 
 function logout() {
-    const login = new SimpleLogin();
-    login.logout();
+    if (typeof SimpleLogin !== 'undefined') {
+        const login = new SimpleLogin();
+        login.logout();
+    } else {
+        console.error('SimpleLogin class no encontrada');
+    }
+}
+
+function showMessage(message, type = 'info') {
+    if (typeof window.showToastMessage === 'function') {
+        window.showToastMessage(message, type);
+    } else {
+        console.error('showToastMessage function not found');
+        alert(message);
+    }
 }
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     console.log('SimpleLogin inicializado');
+    console.log('Clases disponibles:', {
+        SimpleLogin: typeof SimpleLogin !== 'undefined'
+    });
 });
