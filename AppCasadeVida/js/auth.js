@@ -38,19 +38,28 @@ class AuthSystem {
             return;
         }
 
+        console.log('Iniciando login con:', { username, password });
+
         try {
             // Login con Supabase usando email como username
             const result = await window.db.login(username, password);
             
+            console.log('Resultado del login:', result);
+            
             if (!result.success) {
+                console.error('Error en login:', result.error);
                 this.showMessage(result.error || 'Error al iniciar sesión', 'error');
                 return;
             }
 
             // Obtener información adicional del usuario
+            console.log('Buscando información adicional para:', result.user.email);
             const userInfo = await this.getUserInfo(result.user.email);
             
+            console.log('Información del usuario:', userInfo);
+            
             if (!userInfo.success) {
+                console.error('Error obteniendo info de usuario:', userInfo.error);
                 this.showMessage('Error al obtener información del usuario', 'error');
                 return;
             }
@@ -65,6 +74,8 @@ class AuthSystem {
                 authUser: result.user
             };
 
+            console.log('Usuario actual establecido:', this.currentUser);
+
             // Save to localStorage
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
 
@@ -73,8 +84,8 @@ class AuthSystem {
             this.showMessage('Bienvenido ' + this.currentUser.nombre, 'success');
 
         } catch (error) {
-            console.error('Login error:', error);
-            this.showMessage('Error al iniciar sesión', 'error');
+            console.error('Error general en login:', error);
+            this.showMessage('Error al iniciar sesión: ' + error.message, 'error');
         }
     }
 
