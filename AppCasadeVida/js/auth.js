@@ -29,7 +29,7 @@ class AuthSystem {
         }
     }
 
-    handleLogin() {
+    async handleLogin() {
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
 
@@ -39,35 +39,30 @@ class AuthSystem {
         }
 
         try {
-            // Get user from database
-            const user = db.getUserByUsername(username);
+            // Login con Supabase usando email como username
+            const result = await window.db.login(username, password);
             
-            if (!user) {
-                this.showMessage('Usuario no encontrado', 'error');
+            if (!result.success) {
+                this.showMessage(result.error || 'Error al iniciar sesión', 'error');
                 return;
             }
 
-            if (user.estado !== 'Activo') {
-                this.showMessage('Usuario inactivo', 'error');
-                return;
-            }
-
-            // Verify password
-            if (!db.verifyPassword(password, user.password)) {
-                this.showMessage('Contraseña incorrecta', 'error');
+            // Obtener información adicional del usuario
+            const userInfo = await this.getUserInfo(result.user.email);
+            
+            if (!userInfo.success) {
+                this.showMessage('Error al obtener información del usuario', 'error');
                 return;
             }
 
             // Login successful
             this.currentUser = {
-                id: user.id,
-                username: user.username,
-                nombre: user.nombre,
-                email: user.email,
-                rolId: user.rolId,
-                rolNombre: db.getRoleName(user.rolId),
-                territorioId: user.territorioId,
-                casaVidaId: user.casaVidaId
+                id: userInfo.data.id,
+                email: userInfo.data.email,
+                nombre: userInfo.data.nombre,
+                rol: userInfo.data.rol,
+                telefono: userInfo.data.telefono,
+                authUser: result.user
             };
 
             // Save to localStorage
@@ -83,7 +78,30 @@ class AuthSystem {
         }
     }
 
-    logout() {
+    async getUserInfo(email) {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('usuarios')
+                .select('*')
+                .eq('email', email)
+                .eq('activo', true)
+                .single();
+            
+            if (error) throw error;
+            return { success: true, data };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    async logout() {
+        try {
+            // Logout de Supabase
+            await window.db.logout();
+        } catch (error) {
+            console.error('Error en logout de Supabase:', error);
+        }
+        
         this.currentUser = null;
         localStorage.removeItem('currentUser');
         this.showLoginScreen();
@@ -123,7 +141,7 @@ class AuthSystem {
     }
 
     updateNavigationByRole() {
-        const role = this.currentUser.rolNombre;
+        const role = this.currentUser.rol;
         
         // Hide/show menu items based on role
         const navItems = document.querySelectorAll('.navbar-nav .nav-link');
@@ -132,11 +150,11 @@ class AuthSystem {
             const text = item.textContent.toLowerCase();
             
             // Administrator can see everything
-            if (role === 'Administrador' || this.isMainAdmin()) {
+            if (role === 'admin') {
                 item.style.display = 'block';
             }
             // Pastor can see most things but not system admin functions
-            else if (role === 'Pastor') {
+            else if (role === 'pastor') {
                 if (text.includes('sistema') || text.includes('configuración')) {
                     item.style.display = 'none';
                 } else {
@@ -144,7 +162,7 @@ class AuthSystem {
                 }
             }
             // Anciano can see most things but not admin functions
-            else if (role === 'Anciano') {
+            else if (role === 'anciano') {
                 if (text.includes('iglesias') || text.includes('usuarios') || text.includes('sistema')) {
                     item.style.display = 'none';
                 } else {
@@ -152,7 +170,7 @@ class AuthSystem {
                 }
             }
             // Lider has limited access
-            else if (role === 'Lider') {
+            else if (role === 'lider') {
                 if (text.includes('mantenimiento') || text.includes('enseñanzas')) {
                     item.style.display = 'none';
                 } else {
@@ -174,16 +192,14 @@ class AuthSystem {
         if (!this.currentUser) return false;
         
         const roleHierarchy = {
-            'Administrador': 5,
-            'Pastor': 4,
-            'Anciano': 3,
-            'Lider': 2,
-            'Colaborador': 1,
-            'Anfitrion': 1,
-            'Integrante': 0
+            'admin': 5,
+            'pastor': 4,
+            'anciano': 3,
+            'lider': 2,
+            'miembro': 1
         };
         
-        const userLevel = roleHierarchy[this.currentUser.rolNombre] || 0;
+        const userLevel = roleHierarchy[this.currentUser.rol] || 0;
         const requiredLevel = roleHierarchy[requiredRole] || 0;
         
         return userLevel >= requiredLevel;
