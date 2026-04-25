@@ -80,6 +80,8 @@ class AuthSystem {
 
     async getUserInfo(email) {
         try {
+            console.log('Buscando usuario con email:', email);
+            
             const { data, error } = await window.supabaseClient
                 .from('usuarios')
                 .select('*')
@@ -87,9 +89,21 @@ class AuthSystem {
                 .eq('activo', true)
                 .single();
             
-            if (error) throw error;
+            console.log('Resultado de búsqueda:', { data, error });
+            
+            if (error) {
+                console.error('Error en consulta de usuario:', error);
+                return { success: false, error: error.message };
+            }
+            
+            if (!data) {
+                console.error('Usuario no encontrado en la tabla usuarios');
+                return { success: false, error: 'Usuario no encontrado en la tabla usuarios. Verifica que el email esté registrado correctamente.' };
+            }
+            
             return { success: true, data };
         } catch (error) {
+            console.error('Error en getUserInfo:', error);
             return { success: false, error: error.message };
         }
     }
