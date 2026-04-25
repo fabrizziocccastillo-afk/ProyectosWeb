@@ -228,4 +228,37 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Clases disponibles:', {
         SimpleLogin: typeof SimpleLogin !== 'undefined'
     });
+    
+    // Verificar elementos necesarios
+    const usernameElement = document.getElementById('username');
+    const passwordElement = document.getElementById('password');
+    const loginFormElement = document.getElementById('loginForm');
+    
+    if (!usernameElement || !passwordElement || !loginFormElement) {
+        console.error('Faltan elementos necesarios para el login');
+        document.body.innerHTML = `
+            <div class="alert alert-danger">
+                <h4>Error Crítico</h4>
+                <p>No se encontraron los elementos necesarios para el formulario de login.</p>
+                <p>Elementos faltantes: username, password, o loginForm</p>
+                <button onclick="location.reload()" class="btn btn-primary">Recargar Página</button>
+            </div>
+        `;
+        return;
+    }
+    
+    // Verificar si Supabase está disponible
+    if (typeof window.supabaseClient === 'undefined') {
+        console.error('Supabase client no disponible');
+        document.body.innerHTML = `
+            <div class="alert alert-danger">
+                <h4>Error de Conexión</h4>
+                <p>No se pudo conectar con Supabase. Verifica las credenciales.</p>
+                <button onclick="location.reload()" class="btn btn-primary">Recargar Página</button>
+            </div>
+        `;
+        return;
+    }
+    
+    console.log('Todos los elementos necesarios están presentes');
 });
