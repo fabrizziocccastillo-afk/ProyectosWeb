@@ -79,7 +79,8 @@ class SupabaseDatabase {
                 .from('casas_vida')
                 .select(`
                     *,
-                    lider:usuarios(id, nombre, email),
+                    lider:lider_usuarios!id_lider(id, nombre, email),
+                    anterior_lider:anterior_lider_usuarios!id_anterior_lider(id, nombre, email),
                     miembros:miembros(id, nombre, email)
                 `)
                 .eq('activa', true)
