@@ -109,10 +109,19 @@
             try {
                 // Test 1: Obtener usuarios
                 const usuariosResult = await window.db.getUsuarios();
+                let usuarioData = '';
+                if (usuariosResult.success) {
+                    usuarioData = `${usuariosResult.data.length} usuarios activos encontrados (Total: ${usuariosResult.total || 0})`;
+                    if (usuariosResult.data.length > 0) {
+                        usuarioData += ` - Emails: ${usuariosResult.data.map(u => u.email).join(', ')}`;
+                    }
+                } else {
+                    usuarioData = usuariosResult.error;
+                }
                 results.push({
                     test: 'Obtener Usuarios',
                     success: usuariosResult.success,
-                    data: usuariosResult.success ? `${usuariosResult.data.length} usuarios encontrados` : usuariosResult.error
+                    data: usuarioData
                 });
 
                 // Test 2: Obtener casas de vida

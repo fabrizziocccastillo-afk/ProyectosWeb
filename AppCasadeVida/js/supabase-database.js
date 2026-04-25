@@ -44,14 +44,23 @@ class SupabaseDatabase {
 
     async getUsuarios() {
         try {
+            // Primero intentar obtener todos los usuarios sin filtro de activo
             const { data, error } = await this.client
                 .from('usuarios')
                 .select('*')
-                .eq('activo', true)
                 .order('nombre');
             
             if (error) throw error;
-            return { success: true, data };
+            
+            // Filtrar usuarios activos localmente
+            const usuariosActivos = data.filter(usuario => usuario.activo !== false);
+            
+            return { 
+                success: true, 
+                data: usuariosActivos,
+                total: data.length,
+                activos: usuariosActivos.length
+            };
         } catch (error) {
             return { success: false, error: error.message };
         }
