@@ -1,0 +1,54 @@
+crea una app web que permita llevar el control de registro de asistencias a reuniones semanales de todos los viernes
+la app debe de poder visualizar o descargar la enseñanza que el usuario con rol pastor lo cargo previamente
+la casa o varias casas de vida pertenece a un solo territorio
+el usuario con rol pastor puede ver uno o varios territorios y las casas de vida que pertenece a ese territorio y sus integrantes
+el usuario con rol Anciano solo puede ver las casas de vida que pertenece a su territorio con sus integrantes
+el usuario de rol lider pueda ver solo a los integrantes que estan registrados a la casa de vida de su asignacion
+el usuario con rol de pastor y/o anciano crea la tarea para que el usuario lider la pueda ver y registrar el seguimiento realizado
+
+crud de iglesia
+crud de rol
+crud territorios
+crud de casas de vida
+crud de integrantes
+crud enseñanzas
+crud Tareas
+crud usuarios
+
+pantalla de registro de iglesia, nombre, direccion, telefonos, pastor, ubicacion gps, estado
+
+pantalla de registro de rol: Pastor, anciano, lider, colaborador, anfitrion, integrante, estado
+
+pantalla de registro de territorios nombre de colores, nombre de anciano, estado
+
+pantalla de casas de vida, territorio trae del mantenimiento de territorio, nombre de casa de vida, trae campo rol de la pantalla mantenimiento de rol, campo nombres, direccion, gps del domicilio
+
+pantalla de integrantes donde se registra nombres, rol (trae de la pantalla de mantenimiento de rol),telefono, direccion, sexo, edad, fecha de cumpleaños, foto del integrante, registro de estudios biblico (curso o nivel, estado), bautizado (si o no), estado
+
+pantalla de enseñanzas que este en el usuario de rol pastor y/o anciano que suba las enseñanzas y que el usuario de rol lider lo pueda solo visualizar y descargarlo
+
+pantalla de tareas que lo registre el usuario de rol pastor y/o anciano todas las tareas que fueron asigandas a cada usuario de rol lider que este asignado de las casas de vida donde muestre las tareas en estado de pendiente, iniciando y terminada, fecha de culminacion lo tome del dia que presiono el boton finalizada,  a su vez poder poner un comentario y cuando esta tarea cambien de estado a finalizada no permita cambiar ninguna informacion de la tarea y se quede como historico
+
+pantalla de registro de asistencia de integrantes donde cada semana se lleve el control de las reuniones donde traiga el listados de integrante de la casa de vida con los campos nombres y foto del integrante a la cual pertenece con check marcando su asistencia y cada registro de asistencia lleve su secuencial propio y este se muestre en un listado de reuniones como historico, esta pantalla tenga los botones crear, modificar, aprobar y reversar, eliminar
+
+que la base de datos sea creada en un archivo plano que almacene todos los registro de la plataforma
+
+que tenga pantalla de lista de notificaciones con sonido de alerta y que lo tome del equipo android indicando una nuevo registro de integrante, nueva enseñanza registrada, nuevo reporte de asistencia, nueva tarea asignada, la notficacion tambien llegue a todos los usuario que tengan a su asignacion por casa de vida
+
+que en la pantalla principal muestre en conteo de lo siguiente; por bautizar(lo tome de la pantalla de intregantes y que tengan el campo bautizado con no), conteno de personas por casa de vida, conteo por casas de vida asignadas, conteno de notificaciones pendientes de leer, listado de cumpleañeros del mes en curso 
+
+pantalla de usuario con campo relacionado con la pantalla de mantenimiento de territorio y este lo relacione con el contenido de casa de vida, integrantes y solo vea sus registros al acceder
+
+que tenga login de acceso y que por default tenga el usuario admin para accerder y crear los demas usuarios
+
+
+
+
+
+
+
+
+
+
+
+ 

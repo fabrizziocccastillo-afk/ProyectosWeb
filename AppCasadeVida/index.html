@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casa de Vida - Sistema de Gestión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="auth-screen">
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <div class="col-lg-6 d-none d-lg-block bg-login"></div>
+                <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                    <div class="auth-form">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-church fa-3x text-primary mb-3"></i>
+                            <h2>Casa de Vida</h2>
+                            <p class="text-muted">Sistema de Gestión Integral</p>
+                        </div>
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label">Usuario</label>
+                                <input type="text" class="form-control" id="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                            </button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <button type="button" class="btn btn-link text-primary p-0" onclick="showResetPasswordModal()">
+                                <i class="fas fa-key me-1"></i>¿Olvidaste tu contraseña?
+                            </button>
+                        </div>
+                        <div class="text-center mt-2">
+                            <small class="text-muted">Usuario por defecto: admin / admin123</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>Restablecer Contraseña
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetPasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label">Correo Electrónico</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="resetEmail" 
+                                       placeholder="Ingresa tu correo electrónico" required>
+                            </div>
+                            <small class="text-muted">Te enviaremos tu contraseña restablecida a este correo</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="resetPassword()">
+                        <i class="fas fa-paper-plane me-2"></i>Enviar Contraseña
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Sent Confirmation Modal -->
+    <div class="modal fade" id="emailSentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-check-circle text-success me-2"></i>Correo Enviado
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-envelope fa-3x text-primary"></i>
+                    </div>
+                    <h6>¡Contraseña enviada exitosamente!</h6>
+                    <p class="text-muted">Hemos enviado tu contraseña restablecida a tu correo electrónico.</p>
+                    <p class="text-muted small">Por favor, revisa tu bandeja de entrada y spam.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="editNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo Electrónico</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="editEmail" 
+                                       placeholder="tu@email.com" required>
+                            </div>
+                            <small class="text-muted">Este correo se usará para restablecer tu contraseña</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cambiar Contraseña (opcional)</label>
+                            <input type="password" class="form-control" id="editPassword" 
+                                   placeholder="Deja en blanco para no cambiar">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-control" id="editConfirmPassword" 
+                                   placeholder="Confirma tu nueva contraseña">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProfile()">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="d-none">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-church me-2"></i>Casa de Vida
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showDashboard()">
+                                <i class="fas fa-home me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="fas fa-cog me-1"></i>Mantenimiento
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="showIglesias()">Iglesias</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showRoles()">Roles</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showUsuarios()">Usuarios</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showTerritorios()">Territorios</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCasasVida()">Casas de Vida</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showIntegrantes()">Integrantes</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="fas fa-tasks me-1"></i>Gestión
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="showAsistencia()">Asistencia</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showEnseñanzas()">Enseñanzas</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showTareas()">Tareas</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="fas fa-bell me-1"></i>
+                                <span class="badge bg-danger" id="notificationCount">0</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" id="notificationList">
+                                <!-- Notifications will be loaded here -->
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>
+                                <span id="currentUser">Usuario</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="showProfile()">
+                                    <i class="fas fa-user me-2"></i>Mi Perfil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                </a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid main-content">
+            <div id="contentArea">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio for notifications -->
+    <audio id="notificationSound" preload="auto">
+        <source src="sounds/notification.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/crud.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/views.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/attendance.js"></script>
+    <script src="js/fileManager.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/passwordReset.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

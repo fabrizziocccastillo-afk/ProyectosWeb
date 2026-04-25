@@ -1,0 +1,43 @@
+{
+  "name": "casa-de-vida-app",
+  "version": "1.0.0",
+  "description": "Sistema de gestión integral para casas de vida y control de asistencias",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "dev": "python -m http.server 8080 --bind 0.0.0.0",
+    "serve": "python -m http.server 8080",
+    "build": "echo 'Build complete - files are ready for deployment'",
+    "test": "echo 'No tests specified yet'"
+  },
+  "keywords": [
+    "church",
+    "management",
+    "attendance",
+    "religious",
+    "community",
+    "javascript",
+    "bootstrap",
+    "web-app"
+  ],
+  "author": "Casa de Vida Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/casa-de-vida/management-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/casa-de-vida/management-system/issues"
+  },
+  "homepage": "https://github.com/casa-de-vida/management-system#readme",
+  "devDependencies": {},
+  "dependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "engines": {
+    "python": ">=3.6"
+  }
+}

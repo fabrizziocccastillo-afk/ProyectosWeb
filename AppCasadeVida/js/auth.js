@@ -1,0 +1,272 @@
+// Authentication System
+class AuthSystem {
+    constructor() {
+        this.currentUser = null;
+        this.init();
+    }
+
+    init() {
+        // Check if user is already logged in
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            this.currentUser = JSON.parse(savedUser);
+            this.showMainApp();
+        } else {
+            this.showLoginScreen();
+        }
+
+        // Setup login form
+        this.setupLoginForm();
+    }
+
+    setupLoginForm() {
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleLogin();
+            });
+        }
+    }
+
+    handleLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (!username || !password) {
+            this.showMessage('Por favor ingrese usuario y contraseña', 'error');
+            return;
+        }
+
+        try {
+            // Get user from database
+            const user = db.getUserByUsername(username);
+            
+            if (!user) {
+                this.showMessage('Usuario no encontrado', 'error');
+                return;
+            }
+
+            if (user.estado !== 'Activo') {
+                this.showMessage('Usuario inactivo', 'error');
+                return;
+            }
+
+            // Verify password
+            if (!db.verifyPassword(password, user.password)) {
+                this.showMessage('Contraseña incorrecta', 'error');
+                return;
+            }
+
+            // Login successful
+            this.currentUser = {
+                id: user.id,
+                username: user.username,
+                nombre: user.nombre,
+                email: user.email,
+                rolId: user.rolId,
+                rolNombre: db.getRoleName(user.rolId),
+                territorioId: user.territorioId,
+                casaVidaId: user.casaVidaId
+            };
+
+            // Save to localStorage
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+
+            // Show main app
+            this.showMainApp();
+            this.showMessage('Bienvenido ' + this.currentUser.nombre, 'success');
+
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showMessage('Error al iniciar sesión', 'error');
+        }
+    }
+
+    logout() {
+        this.currentUser = null;
+        localStorage.removeItem('currentUser');
+        this.showLoginScreen();
+        this.showMessage('Sesión cerrada correctamente', 'info');
+    }
+
+    showLoginScreen() {
+        document.getElementById('loginScreen').classList.remove('d-none');
+        document.getElementById('mainApp').classList.add('d-none');
+    }
+
+    showMainApp() {
+        document.getElementById('loginScreen').classList.add('d-none');
+        document.getElementById('mainApp').classList.remove('d-none');
+        
+        // Update UI with user info
+        this.updateUserInterface();
+        
+        // Show dashboard by default
+        showDashboard();
+        
+        // Load notifications
+        loadNotifications();
+    }
+
+    updateUserInterface() {
+        if (!this.currentUser) return;
+
+        // Update current user display
+        const currentUserElement = document.getElementById('currentUser');
+        if (currentUserElement) {
+            currentUserElement.textContent = this.currentUser.nombre;
+        }
+
+        // Update navigation based on role
+        this.updateNavigationByRole();
+    }
+
+    updateNavigationByRole() {
+        const role = this.currentUser.rolNombre;
+        
+        // Hide/show menu items based on role
+        const navItems = document.querySelectorAll('.navbar-nav .nav-link');
+        
+        navItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            
+            // Administrator can see everything
+            if (role === 'Administrador' || this.isMainAdmin()) {
+                item.style.display = 'block';
+            }
+            // Pastor can see most things but not system admin functions
+            else if (role === 'Pastor') {
+                if (text.includes('sistema') || text.includes('configuración')) {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = 'block';
+                }
+            }
+            // Anciano can see most things but not admin functions
+            else if (role === 'Anciano') {
+                if (text.includes('iglesias') || text.includes('usuarios') || text.includes('sistema')) {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = 'block';
+                }
+            }
+            // Lider has limited access
+            else if (role === 'Lider') {
+                if (text.includes('mantenimiento') || text.includes('enseñanzas')) {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = 'block';
+                }
+            }
+            // Other roles have minimal access
+            else {
+                if (text.includes('mantenimiento') || text.includes('gestión')) {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = 'block';
+                }
+            }
+        });
+    }
+
+    checkPermission(requiredRole) {
+        if (!this.currentUser) return false;
+        
+        const roleHierarchy = {
+            'Administrador': 5,
+            'Pastor': 4,
+            'Anciano': 3,
+            'Lider': 2,
+            'Colaborador': 1,
+            'Anfitrion': 1,
+            'Integrante': 0
+        };
+        
+        const userLevel = roleHierarchy[this.currentUser.rolNombre] || 0;
+        const requiredLevel = roleHierarchy[requiredRole] || 0;
+        
+        return userLevel >= requiredLevel;
+    }
+
+    // Check if user is main administrator
+    isMainAdmin() {
+        if (!this.currentUser) return false;
+        
+        const user = db.getUser(this.currentUser.id);
+        return user && user.isAdmin === true;
+    }
+
+    // Check specific admin permissions
+    hasAdminPermission(permission) {
+        if (!this.currentUser) return false;
+        
+        const user = db.getUser(this.currentUser.id);
+        if (!user || !user.permissions) return false;
+        
+        return user.permissions[permission] === true;
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
+    }
+
+    showMessage(message, type = 'info') {
+        // Create toast notification
+        const toastHtml = `
+            <div class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+
+        // Create toast container if it doesn't exist
+        let toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toastContainer';
+            toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            document.body.appendChild(toastContainer);
+        }
+
+        // Add toast to container
+        const toastElement = document.createElement('div');
+        toastElement.innerHTML = toastHtml;
+        toastContainer.appendChild(toastElement.firstElementChild);
+
+        // Show toast
+        const toast = new bootstrap.Toast(toastContainer.lastElementChild);
+        toast.show();
+
+        // Remove toast after it's hidden
+        toastContainer.lastElementChild.addEventListener('hidden.bs.toast', () => {
+            toastContainer.removeChild(toastContainer.lastElementChild);
+        });
+    }
+}
+
+// Auth system will be initialized in main.js
+
+// Global logout function
+function logout() {
+    auth.logout();
+}
+
+// Check if user is logged in
+function isLoggedIn() {
+    return auth.getCurrentUser() !== null;
+}
+
+// Get current user
+function getCurrentUser() {
+    return auth.getCurrentUser();
+}
+
+// Check user permission
+function hasPermission(requiredRole) {
+    return auth.checkPermission(requiredRole);
+}
