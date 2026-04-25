@@ -168,6 +168,8 @@
             const resultsDiv = document.getElementById('testResults');
             resultsDiv.innerHTML = '<div class="alert alert-info">Probando autenticación...</div>';
             
+            let results = []; // Definir la variable results
+            
             try {
                 // Test 1: Obtener usuario actual
                 const currentUserResult = await window.db.getCurrentUser();
