@@ -42,8 +42,33 @@
     <script src="js/supabase-database.js"></script>
     
     <script>
+        // Verificar que Supabase esté inicializado
+        function checkSupabaseReady() {
+            if (!window.supabaseClient) {
+                return 'Supabase client not initialized. Please refresh the page.';
+            }
+            if (!window.db) {
+                return 'Database class not loaded. Please check supabase-database.js';
+            }
+            return null;
+        }
+
         async function testConnection() {
             const resultsDiv = document.getElementById('testResults');
+            
+            // Verificar inicialización
+            const initError = checkSupabaseReady();
+            if (initError) {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-times-circle me-2"></i>Error de Inicialización</h5>
+                        <p>${initError}</p>
+                        <small>Check console for more details.</small>
+                    </div>
+                `;
+                return;
+            }
+            
             resultsDiv.innerHTML = '<div class="alert alert-info">Probando conexión...</div>';
             
             try {
